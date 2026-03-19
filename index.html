@@ -1,1 +1,937 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>길음·돈암·정릉 단지 비교 최종판 v6</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+  background: #f1f5f9; color: #1e293b; font-size: 14px; line-height: 1.6;
+}
 
+/* ── 레이아웃 ── */
+.page { max-width: 1100px; margin: 0 auto; padding: 20px 16px 40px; }
+
+/* ── 헤더 ── */
+.hdr { background: #0f172a; color: white; padding: 18px 24px; border-radius: 14px; margin-bottom: 20px; }
+.hdr h1 { font-size: 20px; font-weight: 800; margin-bottom: 5px; }
+.hdr p { font-size: 13px; color: #94a3b8; }
+.hdr-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.hdr-badge { background: #1e3a5f; color: #93c5fd; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
+
+/* ── 탭 ── */
+.tabs { display: flex; background: white; border-radius: 12px; padding: 6px; gap: 4px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,.06); flex-wrap: wrap; }
+.tab { flex: 1; min-width: 120px; padding: 10px 12px; font-size: 13px; font-weight: 600; color: #64748b; border-radius: 8px; cursor: pointer; text-align: center; transition: all .15s; white-space: nowrap; }
+.tab:hover { background: #f8fafc; color: #1e293b; }
+.tab.active { background: #0f172a; color: white; }
+
+/* ── 섹션 ── */
+.sec { display: none; }
+.sec.active { display: block; }
+
+/* ── 배지 ── */
+.badge { display: inline-flex; padding: 2px 8px; border-radius: 5px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.bg-g { background:#f0fdf4; color:#166534; }
+.bg-b { background:#eff6ff; color:#1e40af; }
+.bg-a { background:#fffbeb; color:#92400e; }
+.bg-r { background:#fef2f2; color:#991b1b; }
+.bg-p { background:#f3e8ff; color:#6b21a8; }
+.bg-or { background:#fff7ed; color:#9a3412; }
+.bg-gr { background:#f8fafc; color:#475569; border: 1px solid #e2e8f0; }
+.badge-row { display: flex; gap: 5px; flex-wrap: wrap; }
+.cg{color:#166534;} .cb{color:#1e40af;} .ca{color:#92400e;}
+.cr{color:#dc2626;} .cp{color:#6b21a8;} .cor{color:#9a3412;}
+
+/* ── 카드 공통 ── */
+.card { background: white; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,.07); overflow: hidden; margin-bottom: 16px; }
+
+/* ── 중학교 수준 탭 ── */
+.school-bar-wrap { padding: 20px; }
+.school-bar-wrap h2 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+.sbar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.sbar-label { font-size: 13px; font-weight: 700; flex: 0 0 55px; }
+.sbar-bg { flex: 1; height: 28px; background: #f1f5f9; border-radius: 6px; overflow: hidden; }
+.sbar-fill { height: 100%; display: flex; align-items: center; padding: 0 10px; font-size: 11px; font-weight: 700; color: white; }
+.sbar-tag { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 5px; flex-shrink: 0; min-width: 60px; text-align: center; }
+
+.school-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.school-card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.06); overflow: hidden; }
+.school-card-head { padding: 14px 16px 10px; }
+.school-card-title { font-size: 16px; font-weight: 700; margin-bottom: 3px; }
+.school-card-sub { font-size: 12px; color: #64748b; }
+.school-pct { font-size: 28px; font-weight: 900; line-height: 1; margin: 8px 0 4px; }
+.school-bar { height: 5px; background: #f1f5f9; border-radius: 3px; margin: 0 16px 10px; overflow: hidden; }
+.school-bar-fill { height: 100%; border-radius: 3px; }
+.school-rows { padding: 0 16px 12px; }
+.school-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #f8fafc; font-size: 12px; }
+.school-row:last-child { border-bottom: none; }
+.school-k { color: #64748b; }
+.school-v { font-weight: 600; }
+.school-note { font-size: 11px; background: #f8fafc; padding: 8px 16px 12px; line-height: 1.6; color: #475569; }
+.school-note.warn { background: #fef2f2; color: #991b1b; font-weight: 600; }
+
+/* ── 비교표 탭 ── */
+.tbl-outer { overflow-x: auto; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,.07); }
+.cmp-table { width: 100%; border-collapse: collapse; background: white; min-width: 860px; font-size: 12px; }
+.cmp-table thead tr { background: #0f172a; }
+.cmp-table thead th { padding: 11px 10px; color: #e2e8f0; font-weight: 600; font-size: 11px; text-align: center; white-space: nowrap; }
+.cmp-table thead th:first-child { text-align: left; padding-left: 16px; }
+.cmp-table tbody tr { border-bottom: 1px solid #f1f5f9; }
+.cmp-table tbody tr:hover { background: #fafbfc; }
+.cmp-table tbody tr.tr-s { background: #f0fdf4; }
+.cmp-table tbody tr.tr-s:hover { background: #ecfdf5; }
+.cmp-table tbody tr.tr-new { background: #fff7ed; }
+.cmp-table tbody tr.tr-new:hover { background: #fef3e2; }
+.cmp-table tbody tr.tr-a { background: #eff6ff; }
+.cmp-table tbody tr.tr-a:hover { background: #e8f2ff; }
+.cmp-table tbody tr.tr-d { opacity: .78; }
+.cmp-table tbody td { padding: 10px; text-align: center; vertical-align: middle; }
+.cmp-table tbody td:first-child { text-align: left; padding-left: 16px; }
+.dn { font-size: 13px; font-weight: 700; }
+.dsub { font-size: 11px; color: #64748b; margin-top: 2px; line-height: 1.4; }
+
+/* ── 단지 상세 탭 ── */
+.unit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); gap: 16px; }
+.unit-card { background: white; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,.07); overflow: hidden; }
+.unit-card.s  { border-top: 4px solid #16a34a; }
+.unit-card.new { border-top: 4px solid #ea580c; }
+.unit-card.a  { border-top: 4px solid #2563eb; }
+.unit-card.d  { border-top: 2px solid #dc2626; opacity: .82; }
+.unit-head { padding: 16px 18px 12px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.unit-name { font-size: 18px; font-weight: 800; margin-bottom: 3px; }
+.unit-brand { font-size: 12px; color: #64748b; margin-bottom: 8px; }
+.unit-price { font-size: 20px; font-weight: 900; text-align: right; flex-shrink: 0; }
+.unit-psub { font-size: 11px; color: #64748b; text-align: right; margin-top: 3px; }
+.unit-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid #f1f5f9; }
+.unit-stat { padding: 12px 14px; border-right: 1px solid #f1f5f9; }
+.unit-stat:last-child { border-right: none; }
+.usl { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; }
+.usv { font-size: 14px; font-weight: 700; }
+.uss { font-size: 11px; color: #64748b; margin-top: 2px; line-height: 1.4; }
+.unit-school { background: #f8fafc; border-top: 1px solid #f1f5f9; padding: 12px 18px; }
+.unit-school-lbl { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
+.unit-school-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.unit-school-bar { height: 4px; background: #e2e8f0; border-radius: 2px; margin: 5px 0; overflow: hidden; }
+.unit-school-fill { height: 100%; border-radius: 2px; }
+.unit-school-sub { font-size: 11px; color: #475569; line-height: 1.6; }
+.unit-warn { font-size: 11px; color: #dc2626; font-weight: 600; margin-top: 5px; }
+.unit-rec { padding: 12px 18px; border-top: 1px solid #f1f5f9; }
+.unit-rec-inner { border-radius: 8px; padding: 10px 14px; }
+.unit-rec-title { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+.unit-rec-text { font-size: 12px; line-height: 1.6; }
+.bad-list { background: white; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,.07); padding: 18px; }
+.bad-title { font-size: 13px; font-weight: 700; color: #dc2626; margin-bottom: 12px; }
+.bad-row { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid #f8fafc; font-size: 13px; }
+.bad-row:last-child { border-bottom: none; }
+.bad-name { font-weight: 700; flex: 0 0 80px; }
+.bad-reason { color: #64748b; }
+
+/* ── 결론 탭 ── */
+.rank-card { background: white; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,.07); padding: 20px; margin-bottom: 16px; }
+.rank-card h2 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.rank-info { font-size: 12px; color: #1e40af; background: #eff6ff; border-radius: 7px; padding: 7px 12px; margin-bottom: 16px; font-weight: 600; }
+.rank-item { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 11px; margin-bottom: 10px; }
+.rank-item:last-child { margin-bottom: 0; }
+.rank-num { font-size: 26px; font-weight: 900; flex-shrink: 0; width: 36px; text-align: center; }
+.rank-body { flex: 1; min-width: 0; }
+.rank-name-row { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-bottom: 5px; }
+.rank-name { font-size: 16px; font-weight: 800; }
+.rank-desc { font-size: 12px; color: #475569; line-height: 1.7; }
+.rank-price { text-align: right; flex-shrink: 0; }
+.rank-price-val { font-size: 16px; font-weight: 800; }
+.rank-price-sub { font-size: 11px; color: #64748b; margin-top: 2px; }
+.rank-note { background: #eff6ff; border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; }
+.rank-note-title { font-size: 12px; font-weight: 700; color: #1e40af; margin-bottom: 8px; }
+.rank-note-row { font-size: 12px; color: #1e3a8a; line-height: 1.9; }
+.bad-card { background: #fef2f2; border-radius: 12px; padding: 16px 18px; border-left: 4px solid #ef4444; }
+.bad-card-title { font-size: 13px; font-weight: 700; color: #dc2626; margin-bottom: 10px; }
+.bad-card-row { font-size: 12px; color: #7f1d1d; line-height: 1.9; }
+
+.section-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; color: #1e293b; display: flex; align-items: center; gap: 7px; }
+
+.footer { text-align: center; padding: 24px; font-size: 11px; color: #94a3b8; line-height: 1.9; }
+
+/* ── 반응형 ── */
+@media (max-width: 768px) {
+  .page { padding: 12px 10px 32px; }
+  .hdr { padding: 14px 16px; border-radius: 10px; margin-bottom: 14px; }
+  .hdr h1 { font-size: 16px; }
+  .tabs { border-radius: 10px; padding: 4px; gap: 3px; margin-bottom: 14px; }
+  .tab { min-width: 80px; padding: 8px 6px; font-size: 11px; }
+  .unit-grid { grid-template-columns: 1fr; }
+  .unit-stats { grid-template-columns: 1fr 1fr; }
+  .unit-stats .unit-stat:nth-child(2) { border-right: none; }
+  .unit-stats .unit-stat:nth-child(3) { border-top: 1px solid #f1f5f9; grid-column: span 2; border-right: none; }
+  .school-grid { grid-template-columns: 1fr; }
+  .rank-item { padding: 12px; }
+  .rank-num { font-size: 20px; width: 28px; }
+  .rank-name { font-size: 14px; }
+  .rank-price-val { font-size: 14px; }
+}
+@media (max-width: 540px) {
+  .unit-head { flex-direction: column; }
+  .unit-price { text-align: left; }
+  .unit-stats { grid-template-columns: 1fr 1fr; }
+  .unit-stats .unit-stat:nth-child(3) { grid-column: span 2; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- 헤더 -->
+<div class="hdr">
+  <h1>길음·돈암·정릉 단지 비교 최종판</h1>
+  <p>시청역 삼성본관 근무 · 9세 아들 기준 · 무주택 예산 13.5억</p>
+  <div class="hdr-badges">
+    <span class="hdr-badge">👦 아들 기준 순위</span>
+    <span class="hdr-badge">🏫 고명중·길음중 학군</span>
+    <span class="hdr-badge">🚇 4호선→시청역 출퇴근</span>
+    <span class="hdr-badge">v6 PC/모바일 통합</span>
+  </div>
+</div>
+
+<!-- 탭 -->
+<div class="tabs">
+  <div class="tab active" onclick="showTab('school')">📚 중학교 수준</div>
+  <div class="tab" onclick="showTab('table')">📊 단지 비교표</div>
+  <div class="tab" onclick="showTab('detail')">🏠 단지 상세</div>
+  <div class="tab" onclick="showTab('final')">🏆 순위 & 결론</div>
+</div>
+
+
+<!-- ════════════ TAB 1: 중학교 수준 ════════════ -->
+<div id="tab-school" class="sec active">
+
+  <div class="card">
+    <div class="school-bar-wrap">
+      <h2>배정 중학교 수준 비교 (특목·자사고 진학률)</h2>
+      <div class="sbar-row">
+        <span class="sbar-label cg">길음중</span>
+        <div class="sbar-bg"><div class="sbar-fill" style="width:97%;background:#16a34a;">30.69% · 전국 25위</div></div>
+        <span class="sbar-tag bg-g">4단지 100%</span>
+      </div>
+      <div class="sbar-row">
+        <span class="sbar-label cb">고명중</span>
+        <div class="sbar-bg"><div class="sbar-fill" style="width:93%;background:#1d4ed8;">~30%+ · 전국 상위 1%</div></div>
+        <span class="sbar-tag bg-r" style="color:#dc2626;">남학교</span>
+      </div>
+      <div class="sbar-row">
+        <span class="sbar-label ca">개운중</span>
+        <div class="sbar-bg"><div class="sbar-fill" style="width:68%;background:#d97706;">~32% · 전국 상위 3%</div></div>
+        <span class="sbar-tag bg-gr">남녀공학</span>
+      </div>
+      <div class="sbar-row" style="margin-bottom:0;">
+        <span class="sbar-label cr">숭곡중</span>
+        <div class="sbar-bg"><div class="sbar-fill" style="width:25%;background:#dc2626;">9.22% · 전국 298위</div></div>
+        <span class="sbar-tag bg-r">회피 필수</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="school-grid">
+
+    <!-- 길음중 -->
+    <div class="school-card" style="border-top:4px solid #16a34a;">
+      <div class="school-card-head">
+        <div class="school-card-title cg">길음중학교</div>
+        <div class="school-card-sub">공립 · 남녀공학 · 910명 · 2012년 개교</div>
+        <div class="badge-row" style="margin-top:8px;">
+          <span class="badge bg-g">성북구 1위</span>
+          <span class="badge bg-g">전국 25위</span>
+          <span class="badge bg-g">4단지 100%</span>
+        </div>
+        <div class="school-pct cg">30.69%</div>
+        <div style="font-size:12px;color:#64748b;">특목·자사고 진학률</div>
+      </div>
+      <div class="school-bar"><div class="school-bar-fill" style="width:97%;background:#16a34a;"></div></div>
+      <div class="school-rows">
+        <div class="school-row"><span class="school-k">리치고 등급</span><span class="school-v cg">1등급 · 전국 상위 0.9%</span></div>
+        <div class="school-row"><span class="school-k">진학자 수</span><span class="school-v">93명 / 졸업생 303명</span></div>
+        <div class="school-row"><span class="school-k">외고 진학률</span><span class="school-v">서울 상위 4%</span></div>
+        <div class="school-row"><span class="school-k">성별</span><span class="school-v">남녀공학</span></div>
+      </div>
+      <div class="school-note">4단지 100% 확정 배정. 혁신학교이나 성취도 독보적. 아들·딸 모두 배정.</div>
+    </div>
+
+    <!-- 고명중 -->
+    <div class="school-card" style="border-top:4px solid #1d4ed8;">
+      <div class="school-card-head">
+        <div class="school-card-title cb">고명중학교</div>
+        <div class="school-card-sub">사립 · <strong style="color:#dc2626;">남학교(남 420명, 여 0명)</strong> · 1955년</div>
+        <div class="badge-row" style="margin-top:8px;">
+          <span class="badge bg-r">남학교 — 아들만</span>
+          <span class="badge bg-b">금호·브라운스톤·정릉2차 유력</span>
+        </div>
+        <div class="school-pct cb">~30%+</div>
+        <div style="font-size:12px;color:#64748b;">특목·자사고 진학률</div>
+      </div>
+      <div class="school-bar"><div class="school-bar-fill" style="width:93%;background:#1d4ed8;"></div></div>
+      <div class="school-rows">
+        <div class="school-row"><span class="school-k">리치고 등급</span><span class="school-v cb">1등급 · 전국 상위 1%</span></div>
+        <div class="school-row"><span class="school-k">자사고 진학률</span><span class="school-v cb">26.9%</span></div>
+        <div class="school-row"><span class="school-k">외고 진학률</span><span class="school-v cb">20.7% ★ (길음중보다 높음)</span></div>
+        <div class="school-row"><span class="school-k">과학고</span><span class="school-v">4.1% · 서울 상위 8%</span></div>
+      </div>
+      <div class="school-note warn">⚠ 남학교. 아들만 배정. 학교알리미 공식 확인: 남 420명, 여 0명.</div>
+    </div>
+
+    <!-- 개운중 -->
+    <div class="school-card" style="border-top:4px solid #d97706;">
+      <div class="school-card-head">
+        <div class="school-card-title ca">개운중학교</div>
+        <div class="school-card-sub">공립 · 남녀공학 · 698명 · 2006년</div>
+        <div class="badge-row" style="margin-top:8px;">
+          <span class="badge bg-gr">남녀공학</span>
+          <span class="badge bg-a">6단지 주배정</span>
+        </div>
+        <div class="school-pct ca">~32%</div>
+        <div style="font-size:12px;color:#64748b;">특목·자사고 진학률</div>
+      </div>
+      <div class="school-bar"><div class="school-bar-fill" style="width:68%;background:#d97706;"></div></div>
+      <div class="school-rows">
+        <div class="school-row"><span class="school-k">리치고 등급</span><span class="school-v ca">1.1등급 · 전국 상위 3%</span></div>
+        <div class="school-row"><span class="school-k">자사고 진학률</span><span class="school-v">16.6%</span></div>
+        <div class="school-row"><span class="school-k">외고 진학률</span><span class="school-v">13.0%</span></div>
+        <div class="school-row"><span class="school-k">성별</span><span class="school-v">남녀공학</span></div>
+      </div>
+      <div class="school-note">6단지 다수 동 주배정. 남녀공학으로 아들·딸 모두 해당. 통학 셔틀 필요.</div>
+    </div>
+
+    <!-- 숭곡중 -->
+    <div class="school-card" style="border-top:4px solid #dc2626;">
+      <div class="school-card-head">
+        <div class="school-card-title cr">숭곡중학교</div>
+        <div class="school-card-sub">공립 · 혁신 · 남녀공학 · 621명 · 2011년</div>
+        <div class="badge-row" style="margin-top:8px;">
+          <span class="badge bg-r">절대 회피</span>
+          <span class="badge bg-r">전국 298위</span>
+        </div>
+        <div class="school-pct cr">9.22%</div>
+        <div style="font-size:12px;color:#64748b;">특목·자사고 진학률</div>
+      </div>
+      <div class="school-bar"><div class="school-bar-fill" style="width:25%;background:#dc2626;"></div></div>
+      <div class="school-rows">
+        <div class="school-row"><span class="school-k">리치고 등급</span><span class="school-v cr">1.3등급 · 전국 상위 8%</span></div>
+        <div class="school-row"><span class="school-k">진학자 수</span><span class="school-v cr">20명 — 지역 평균 대폭 하회</span></div>
+        <div class="school-row"><span class="school-k">길음중 대비</span><span class="school-v cr">진학률 3분의 1 수준</span></div>
+      </div>
+      <div class="school-note warn">6·8·9단지 일부 동 배정. 해당 동은 계약 절대 금지.</div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ════════════ TAB 2: 단지 비교표 ════════════ -->
+<div id="tab-table" class="sec">
+  <div class="tbl-outer">
+    <table class="cmp-table">
+      <thead>
+        <tr>
+          <th style="min-width:110px;">단지</th>
+          <th>배정 중학교</th>
+          <th>학군등급</th>
+          <th>길음역<br>도보</th>
+          <th>시청역<br>소요</th>
+          <th>경사</th>
+          <th>84㎡ 시세</th>
+          <th>연식</th>
+          <th>세대수</th>
+          <th>추천</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr class="tr-new">
+          <td><div class="dn cor">금호어울림센터힐</div><div class="dsub">돈암동</div></td>
+          <td><div style="font-weight:700;color:#1d4ed8;font-size:12px;">고명중 유력</div><div class="dsub">돈암초→고명중<br><span style="color:#dc2626;">남학교·아들만</span></div></td>
+          <td><span class="badge bg-b">1등급</span><div class="dsub">전국 1%</div></td>
+          <td><strong class="cg">3~4분</strong><div class="dsub">역 279m<br>최근접</div></td>
+          <td><strong class="cg">23~26분</strong><div class="dsub">전체 최단</div></td>
+          <td><span class="badge bg-g">평지</span></td>
+          <td><strong class="cp">10.5~11억</strong></td>
+          <td><strong class="cg">2016년</strong><div class="dsub" style="color:#166534;">9년 준신축</div></td>
+          <td>490세대</td>
+          <td><span class="badge bg-g">★1위</span></td>
+        </tr>
+
+        <tr class="tr-new">
+          <td><div class="dn cor">브라운스톤돈암</div><div class="dsub">돈암동</div></td>
+          <td><div style="font-weight:700;color:#1d4ed8;font-size:12px;">고명중 유력</div><div class="dsub">돈암초→고명중<br><span style="color:#dc2626;">남학교·아들만</span></div></td>
+          <td><span class="badge bg-b">1등급</span><div class="dsub">전국 1%</div></td>
+          <td><strong class="ca">10~13분</strong><div class="dsub">동별 편차</div></td>
+          <td><strong class="ca">28~33분</strong></td>
+          <td><span class="badge bg-g">평지</span></td>
+          <td><strong class="ca">10~11억</strong></td>
+          <td>2004년<div class="dsub" style="color:#dc2626;">22년차</div></td>
+          <td>1,074세대</td>
+          <td><span class="badge bg-or">2위</span></td>
+        </tr>
+
+        <tr class="tr-s">
+          <td><div class="dn">4단지</div><div class="dsub">e편한세상<br>길음동</div></td>
+          <td><div style="font-weight:700;color:#166534;font-size:12px;">길음중 100%</div><div class="dsub" style="color:#166534;">길음초 배정<br>남녀공학</div></td>
+          <td><span class="badge bg-g">1등급</span><div class="dsub">전국 0.9%</div></td>
+          <td><strong class="ca">18~20분</strong><div class="dsub">마을버스<br>5~7분</div></td>
+          <td><strong class="ca">35~40분</strong></td>
+          <td><span class="badge bg-r">경사 심함</span><div class="dsub">버스 극복</div></td>
+          <td><strong class="cg">10~11억</strong></td>
+          <td>2005년<div class="dsub" style="color:#92400e;">22년차</div></td>
+          <td>1,605세대</td>
+          <td><span class="badge bg-g">3위</span></td>
+        </tr>
+
+        <tr class="tr-new">
+          <td><div class="dn cor">정릉2차</div><div class="dsub">e편한세상<br>정릉동</div></td>
+          <td><div style="font-weight:700;color:#1d4ed8;font-size:12px;">고명중 도보 3분</div><div class="dsub">배정 확인 필수<br><span style="color:#dc2626;">남학교·아들만</span></div></td>
+          <td><span class="badge bg-b">1등급유력</span><div class="dsub">전국 1%</div></td>
+          <td><strong class="ca">10~11분</strong><div class="dsub">정릉역 9분도</div></td>
+          <td><strong class="ca">35~40분</strong></td>
+          <td><span class="badge bg-a">경사 있음</span></td>
+          <td><strong class="cg">8~9.5억</strong><div class="dsub cg">최저가</div></td>
+          <td>2009년<div class="dsub">16년차</div></td>
+          <td>527세대</td>
+          <td><span class="badge bg-p">4위</span></td>
+        </tr>
+
+        <tr class="tr-s">
+          <td><div class="dn">6단지</div><div class="dsub">래미안<br>길음동</div></td>
+          <td><div style="font-weight:700;font-size:12px;">개운중 多</div><div class="dsub" style="color:#dc2626;">고명중 소수<br>숭곡중 동 회피</div></td>
+          <td><span class="badge bg-a">동별차이</span><div class="dsub">개운중<br>전국 3%</div></td>
+          <td><strong class="cg">5분</strong><div class="dsub">지하연결</div></td>
+          <td><strong class="cg">25~28분</strong></td>
+          <td><span class="badge bg-g">평지</span></td>
+          <td><strong class="cb">12~13억</strong></td>
+          <td>2007년<div class="dsub">18년차</div></td>
+          <td>977세대</td>
+          <td><span class="badge bg-b">5위</span></td>
+        </tr>
+
+        <tr class="tr-a">
+          <td><div class="dn">9단지</div><div class="dsub">래미안<br>길음동</div></td>
+          <td><div style="font-size:12px;">개운중/고명중<br>/숭곡중</div><div class="dsub" style="color:#dc2626;">동별 상이·숭곡 회피</div></td>
+          <td><span class="badge bg-a">동별차이</span></td>
+          <td><strong class="ca">7~10분</strong><div class="dsub">에스컬</div></td>
+          <td><strong class="ca">28~32분</strong></td>
+          <td><span class="badge bg-g">에스컬</span></td>
+          <td><strong class="cp">13~14억</strong></td>
+          <td>2010년<div class="dsub">15년차</div></td>
+          <td>2,940세대</td>
+          <td><span class="badge bg-p">6위</span></td>
+        </tr>
+
+        <tr class="tr-a">
+          <td><div class="dn">8단지</div><div class="dsub">래미안<br>길음동</div></td>
+          <td><div style="font-size:12px;">개운중/고명중<br>/숭곡중</div><div class="dsub" style="color:#dc2626;">동별 상이·숭곡 회피</div></td>
+          <td><span class="badge bg-a">동별차이</span></td>
+          <td><strong class="ca">8~10분</strong></td>
+          <td><strong class="ca">28~32분</strong></td>
+          <td><span class="badge bg-a">보통</span></td>
+          <td><strong>12.5~13.5억</strong></td>
+          <td>2009년<div class="dsub">16년차</div></td>
+          <td>1,900세대</td>
+          <td><span class="badge bg-gr">7위</span></td>
+        </tr>
+
+        <tr class="tr-d">
+          <td><div class="dn">2단지</div><div class="dsub">푸르지오</div></td>
+          <td><div style="color:#166534;font-size:12px;font-weight:700;">길음중 우선</div></td>
+          <td><span class="badge bg-g">1등급</span></td>
+          <td><strong class="cr">20분+</strong></td>
+          <td><strong class="cr">40~45분</strong></td>
+          <td><span class="badge bg-r">최악</span></td>
+          <td><strong class="cg">9~10.5억</strong></td>
+          <td>2005년</td>
+          <td>1,424세대</td>
+          <td><span class="badge bg-r">비추</span></td>
+        </tr>
+
+        <tr class="tr-d">
+          <td><div class="dn">1·3·5단지</div></td>
+          <td><div style="font-size:12px;color:#dc2626;">숭곡중 多(1·5)<br>경사 심함(3)</div></td>
+          <td><span class="badge bg-r">불리</span></td>
+          <td><strong class="cr">다양</strong></td>
+          <td><strong class="cr">35~45분</strong></td>
+          <td><span class="badge bg-r">경사</span></td>
+          <td><strong>8~11.5억</strong></td>
+          <td>2002~08년</td>
+          <td>—</td>
+          <td><span class="badge bg-r">비추</span></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+  <div style="background:white;border-radius:12px;padding:14px 16px;margin-top:14px;font-size:12px;line-height:1.9;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+    🟠 주황 = 신규 추가 단지 &nbsp;|&nbsp; 🟢 초록 = 기존 추천 단지 &nbsp;|&nbsp; 🔵 파란 = 조건부 추천 &nbsp;|&nbsp; 흰색 = 비추천<br>
+    <span style="color:#dc2626;font-weight:600;">⚠ 6·8·9단지는 동마다 배정 학교 다름 — 숭곡중(298위) 배정 동 절대 회피</span><br>
+    <span style="color:#1d4ed8;font-weight:600;">📌 고명중은 남학교 — 9세 아들이면 배정 가능 | 배정은 성북강북교육지원청 공식 확인 필수</span>
+  </div>
+</div>
+
+
+<!-- ════════════ TAB 3: 단지 상세 ════════════ -->
+<div id="tab-detail" class="sec">
+  <div class="unit-grid">
+
+    <!-- 금호어울림 -->
+    <div class="unit-card new">
+      <div class="unit-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
+            <span class="unit-name cor">금호어울림센터힐</span>
+            <span class="badge bg-or">🆕 1위</span>
+          </div>
+          <div class="unit-brand">490세대 · 2016년 3월 · 9년차 · 성북구 돈암동 643</div>
+          <div class="badge-row">
+            <span class="badge bg-g">역 3~4분 최근접</span>
+            <span class="badge bg-g">준신축 9년</span>
+            <span class="badge bg-b">고명중 유력</span>
+            <span class="badge bg-g">평지</span>
+          </div>
+        </div>
+        <div>
+          <div class="unit-price cp">10.5~11억</div>
+          <div class="unit-psub">84㎡ 기준<br>30평대 최근 1년 최고 11억</div>
+        </div>
+      </div>
+      <div class="unit-stats">
+        <div class="unit-stat">
+          <div class="usl">길음역</div>
+          <div class="usv cg">도보 3~4분</div>
+          <div class="uss">역 279m · 비교 단지 전체 최근접<br>6단지(5분)보다도 가까움</div>
+        </div>
+        <div class="unit-stat">
+          <div class="usl">시청역 출퇴근</div>
+          <div class="usv cg">23~26분</div>
+          <div class="uss">4호선→동대문역사→2호선<br>전체 비교 단지 중 최단</div>
+        </div>
+        <div class="unit-stat">
+          <div class="usl">경사 / 연식</div>
+          <div class="usv"><span class="badge bg-g">평지</span> &nbsp; <span class="badge bg-g">준신축</span></div>
+          <div class="uss">돈암동 평지 · 2016년 9년차<br>비교 단지 중 가장 신축</div>
+        </div>
+      </div>
+      <div class="unit-school">
+        <div class="unit-school-lbl">배정 중학교</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+          <span class="unit-school-name cb">고명중 (돈암초→고명중 경로)</span>
+          <span class="badge bg-r">남학교</span>
+        </div>
+        <div class="unit-school-bar"><div class="unit-school-fill" style="width:93%;background:#1d4ed8;"></div></div>
+        <div class="unit-school-sub">전국 상위 1% · 자사고 26.9% · 외고 20.7%★<br>돈암동 주소 → 브라운스톤돈암과 동일 배정 경로</div>
+        <div class="unit-warn">⚠ 남학교(아들만). 배정은 성북강북교육지원청 공식 확인 필수.</div>
+      </div>
+      <div class="unit-rec">
+        <div class="unit-rec-inner" style="background:#f0fdf4;">
+          <div class="unit-rec-title cg">역 초근접 + 고명중 + 준신축 (아들 기준 종합 1위)</div>
+          <div class="unit-rec-text cg">비교 단지 중 역이 가장 가깝고(3~4분) 출퇴근도 가장 짧음(23~26분). 2016년 준신축으로 노후화 부담 없음. 고명중 배정 유력. 유일한 단점은 490세대 소규모.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 브라운스톤돈암 -->
+    <div class="unit-card new">
+      <div class="unit-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
+            <span class="unit-name cor">브라운스톤돈암</span>
+            <span class="badge bg-or">2위</span>
+          </div>
+          <div class="unit-brand">1,074세대 · 2004년 12월 · 22년차 · 성북구 돈암동</div>
+          <div class="badge-row">
+            <span class="badge bg-b">고명중 유력</span>
+            <span class="badge bg-g">완전 평지</span>
+            <span class="badge bg-g">대단지</span>
+          </div>
+        </div>
+        <div>
+          <div class="unit-price ca">10~11억</div>
+          <div class="unit-psub">82타입 기준</div>
+        </div>
+      </div>
+      <div class="unit-stats">
+        <div class="unit-stat">
+          <div class="usl">길음역</div>
+          <div class="usv ca">10~13분</div>
+          <div class="uss">동별 편차 · 평지 이동</div>
+        </div>
+        <div class="unit-stat">
+          <div class="usl">시청역 출퇴근</div>
+          <div class="usv ca">28~33분</div>
+          <div class="uss">4호선→2호선</div>
+        </div>
+        <div class="unit-stat">
+          <div class="usl">경사 / 연식</div>
+          <div class="usv"><span class="badge bg-g">평지</span></div>
+          <div class="uss">2004년 22년차<br>금호보다 13년 오래됨</div>
+        </div>
+      </div>
+      <div class="unit-school">
+        <div class="unit-school-lbl">배정 중학교</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+          <span class="unit-school-name cb">고명중 (돈암초→고명중 경로)</span>
+          <span class="badge bg-r">남학교</span>
+        </div>
+        <div class="unit-school-bar"><div class="unit-school-fill" style="width:93%;background:#1d4ed8;"></div></div>
+        <div class="unit-school-sub">전국 상위 1% · 자사고 26.9% · 외고 20.7%★</div>
+        <div class="unit-warn">⚠ 남학교(아들만). 배정은 교육지원청 공식 확인 필수.</div>
+      </div>
+      <div class="unit-rec">
+        <div class="unit-rec-inner" style="background:#fff7ed;">
+          <div class="unit-rec-title cor">고명중 + 평지 + 대단지 안정성 (금호보다 역 거리 불리)</div>
+          <div class="unit-rec-text cor">금호어울림과 배정 학교·가격 동일하나, 역 거리(10~13분)와 연식(22년차)에서 열세. 대신 1,074세대 중형 단지로 유동성·커뮤니티 우위.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4단지 -->
+    <div class="unit-card s">
+      <div class="unit-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
+            <span class="unit-name">4단지 e편한세상</span>
+            <span class="badge bg-g">3위</span>
+          </div>
+          <div class="unit-brand">1,605세대 · 2005년 · 22년차 · 성북구 길음동</div>
+          <div class="badge-row">
+            <span class="badge bg-g">길음중 100% 확정</span>
+            <span class="badge bg-g">길음초 배정</span>
+            <span class="badge bg-r">경사 심함</span>
+          </div>
+        </div>
+        <div>
+          <div class="unit-price cg">10~11억</div>
+          <div class="unit-psub">예산 여유 최대</div>
+        </div>
+      </div>
+      <div class="unit-stats">
+        <div class="unit-stat">
+          <div class="usl">길음역</div>
+          <div class="usv ca">18~20분</div>
+          <div class="uss">마을버스 5~7분 단축 가능</div>
+        </div>
+        <div class="unit-stat">
+          <div class="usl">시청역 출퇴근</div>
+          <div class="usv ca">35~40분</div>
+          <div class="uss">버스+4호선+2호선</div>
+        </div>
+        <div class="unit-stat">
+          <div class="usl">경사</div>
+          <div class="usv"><span class="badge bg-r">경사 심함</span></div>
+          <div class="uss">마을버스 극복 가능<br>겨울 빙판 주의</div>
+        </div>
+      </div>
+      <div class="unit-school">
+        <div class="unit-school-lbl">배정 중학교</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+          <span class="unit-school-name cg">길음중 100% 확정</span>
+          <div class="badge-row"><span class="badge bg-g">성북구 1위</span><span class="badge bg-g">전국 25위</span></div>
+        </div>
+        <div class="unit-school-bar"><div class="unit-school-fill" style="width:97%;background:#16a34a;"></div></div>
+        <div class="unit-school-sub">특목·자사고 30.69% · 공립 남녀공학 · 아들 확정 배정</div>
+      </div>
+      <div class="unit-rec">
+        <div class="unit-rec-inner" style="background:#f0fdf4;">
+          <div class="unit-rec-title cg">학군 확정성 최강 — 길음중 100% 보장</div>
+          <div class="unit-rec-text cg">고명중(유력)과 달리 길음중은 100% 확정. 배정 불확실성 제로. 경사는 마을버스로 극복. 1,605세대 대단지 안정성.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 정릉2차 -->
+    <div class="unit-card new">
+      <div class="unit-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
+            <span class="unit-name cor">정릉e편한세상2차</span>
+            <span class="badge bg-p">4위</span>
+          </div>
+          <div class="unit-brand">527세대 · 2009년 · 16년차 · 성북구 정릉동</div>
+          <div class="badge-row">
+            <span class="badge bg-b">고명중 도보 3분</span>
+            <span class="badge bg-g">8~9.5억 최저가</span>
+            <span class="badge bg-a">경사 있음</span>
+          </div>
+        </div>
+        <div>
+          <div class="unit-price cp">8~9.5억</div>
+          <div class="unit-psub">비교 단지 최저가<br>(25년 9억500만 실거래)</div>
+        </div>
+      </div>
+      <div class="unit-stats">
+        <div class="unit-stat">
+          <div class="usl">길음역</div>
+          <div class="usv ca">10~11분</div>
+          <div class="uss">정릉역(우이신설) 9분도 가능</div>
+        </div>
+        <div class="unit-stat">
+          <div class="usl">시청역 출퇴근</div>
+          <div class="usv ca">35~40분</div>
+          <div class="uss">버스+4호선+2호선</div>
+        </div>
+        <div class="unit-stat">
+          <div class="usl">경사 / 단지</div>
+          <div class="usv"><span class="badge bg-a">경사 있음</span></div>
+          <div class="uss">527세대 소규모<br>유동성↓ · 임장 필수</div>
+        </div>
+      </div>
+      <div class="unit-school">
+        <div class="unit-school-lbl">배정 중학교</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+          <span class="unit-school-name cb">고명중 (도보 3분 · 배정 유력)</span>
+          <span class="badge bg-r">남학교</span>
+        </div>
+        <div class="unit-school-bar"><div class="unit-school-fill" style="width:93%;background:#1d4ed8;"></div></div>
+        <div class="unit-school-sub">전국 상위 1% · 자사고 26.9% · 외고 20.7%★</div>
+        <div class="unit-warn">⚠ 남학교(아들만). 배정 공식 확인 필수.</div>
+      </div>
+      <div class="unit-rec">
+        <div class="unit-rec-inner" style="background:#fdf4ff;">
+          <div class="unit-rec-title cp">가격 최우선 + 고명중 최근접</div>
+          <div class="unit-rec-text cp">8~9.5억으로 최저가. 고명중 도보 3분 초근접. 단, 527세대 소규모·경사·배정 확인 필수.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6단지 -->
+    <div class="unit-card s">
+      <div class="unit-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
+            <span class="unit-name">6단지 래미안</span>
+            <span class="badge bg-b">5위</span>
+          </div>
+          <div class="unit-brand">977세대 · 2007년 · 18년차 · 성북구 길음동</div>
+          <div class="badge-row">
+            <span class="badge bg-g">역 5분 지하연결</span>
+            <span class="badge bg-g">평지</span>
+            <span class="badge bg-a">개운중 주배정</span>
+          </div>
+        </div>
+        <div>
+          <div class="unit-price cb">12~13억</div>
+          <div class="unit-psub">출퇴근 강점</div>
+        </div>
+      </div>
+      <div class="unit-stats">
+        <div class="unit-stat">
+          <div class="usl">길음역</div>
+          <div class="usv cg">도보 5분</div>
+          <div class="uss">지하주차장 연결 · 비·눈 무관</div>
+        </div>
+        <div class="unit-stat">
+          <div class="usl">시청역 출퇴근</div>
+          <div class="usv cg">25~28분</div>
+          <div class="uss">4호선→동대문역사→2호선</div>
+        </div>
+        <div class="unit-stat">
+          <div class="usl">경사</div>
+          <div class="usv"><span class="badge bg-g">완전 평지</span></div>
+          <div class="uss">단지 내 경사 없음</div>
+        </div>
+      </div>
+      <div class="unit-school">
+        <div class="unit-school-lbl">배정 중학교 (동별 상이 ⚠)</div>
+        <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:5px;">개운중 (다수 동) · 고명중 (소수 동)</div>
+        <div class="unit-school-bar"><div class="unit-school-fill" style="width:68%;background:#d97706;"></div></div>
+        <div class="unit-school-sub">개운중: 전국 상위 3% · 남녀공학 / 고명중: 전국 상위 1% · 남학교</div>
+        <div class="unit-warn">⚠ 아들 기준이면 고명중 배정 동이 소수라 불리. 숭곡중 동 절대 회피.</div>
+      </div>
+      <div class="unit-rec">
+        <div class="unit-rec-inner" style="background:#eff6ff;">
+          <div class="unit-rec-title cb">출퇴근 최강 but 아들 기준엔 학군 불리</div>
+          <div class="unit-rec-text cb">역 5분 평지 시청역 25분은 최강. 그러나 아들 기준 고명중 배정 동이 소수라 1~4위 단지 대비 학군 열세. 학군보다 출퇴근 우선시하면 선택.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 비추천 -->
+  <div class="bad-list">
+    <div class="bad-title">✗ 비추천 단지</div>
+    <div class="bad-row"><span class="bad-name">2단지 푸르지오</span><span class="bad-reason">길음중 배정이나 역거리+경사 최악 (출퇴근 40~45분)</span></div>
+    <div class="bad-row"><span class="bad-name">3단지 센트레빌</span><span class="bad-reason">길음중 배정이나 고지대 경사 극심</span></div>
+    <div class="bad-row"><span class="bad-name">5단지 래미안</span><span class="bad-reason">숭곡중(전국 298위) 多 배정 + 경사 심함</span></div>
+    <div class="bad-row"><span class="bad-name">7단지 두산위브</span><span class="bad-reason">8단지 대비 브랜드 약세, 추가 메리트 없음</span></div>
+    <div class="bad-row"><span class="bad-name">1단지 래미안</span><span class="bad-reason">숭곡중 多 배정 + 2002년 25년 최노후</span></div>
+  </div>
+</div>
+
+
+<!-- ════════════ TAB 4: 순위 & 결론 ════════════ -->
+<div id="tab-final" class="sec">
+
+  <div class="rank-card">
+    <h2>🏆 단지별 종합 순위</h2>
+    <div class="rank-info">👦 9세 아들 기준 · 고명중(남학교) 배정 가능 · 시청역 출퇴근 반영</div>
+
+    <!-- 1위 -->
+    <div class="rank-item" style="background:#fefce8;border-left:5px solid #eab308;">
+      <div class="rank-num" style="color:#eab308;">1</div>
+      <div class="rank-body">
+        <div class="rank-name-row">
+          <span class="rank-name">금호어울림센터힐</span>
+          <span class="badge bg-g">역 3~4분</span>
+          <span class="badge bg-g">준신축 9년</span>
+          <span class="badge bg-b">고명중 유력</span>
+        </div>
+        <div class="rank-desc">고명중(전국 1%) 유력 · 역 279m 전체 최근접 · 시청역 23~26분 최단 · 2016년 준신축<br>단점: 490세대 소규모</div>
+      </div>
+      <div class="rank-price">
+        <div class="rank-price-val cp">10.5~11억</div>
+        <div class="rank-price-sub">490세대</div>
+      </div>
+    </div>
+
+    <!-- 2위 -->
+    <div class="rank-item" style="background:#fff7ed;border-left:5px solid #f59e0b;">
+      <div class="rank-num" style="color:#f59e0b;">2</div>
+      <div class="rank-body">
+        <div class="rank-name-row">
+          <span class="rank-name">브라운스톤돈암</span>
+          <span class="badge bg-b">고명중 유력</span>
+          <span class="badge bg-g">평지</span>
+          <span class="badge bg-g">대단지</span>
+        </div>
+        <div class="rank-desc">고명중 유력 · 완전 평지 · 1,074세대 안정성<br>단점: 금호보다 역 거리↑ 연식↑(22년차)</div>
+      </div>
+      <div class="rank-price">
+        <div class="rank-price-val cor">10~11억</div>
+        <div class="rank-price-sub">1,074세대</div>
+      </div>
+    </div>
+
+    <!-- 3위 -->
+    <div class="rank-item" style="background:#f0fdf4;border-left:5px solid #16a34a;">
+      <div class="rank-num" style="color:#16a34a;">3</div>
+      <div class="rank-body">
+        <div class="rank-name-row">
+          <span class="rank-name">4단지 e편한세상</span>
+          <span class="badge bg-g">길음중 100%</span>
+          <span class="badge bg-g">1,605세대</span>
+        </div>
+        <div class="rank-desc">길음중(전국 25위, 성북 1위) 100% 확정 · 학군 확실성 최강 · 대단지<br>단점: 경사 심함 · 출퇴근 35~40분</div>
+      </div>
+      <div class="rank-price">
+        <div class="rank-price-val cg">10~11억</div>
+        <div class="rank-price-sub">1,605세대</div>
+      </div>
+    </div>
+
+    <!-- 4위 -->
+    <div class="rank-item" style="background:#fdf4ff;border-left:5px solid #a855f7;">
+      <div class="rank-num" style="color:#a855f7;">4</div>
+      <div class="rank-body">
+        <div class="rank-name-row">
+          <span class="rank-name">정릉e편한세상2차</span>
+          <span class="badge bg-b">고명중 도보 3분</span>
+          <span class="badge bg-g">최저가</span>
+        </div>
+        <div class="rank-desc">고명중 도보 3분 초근접 · 8~9.5억 최저가<br>단점: 527세대 소규모 · 경사 있음 · 배정 확인 필수</div>
+      </div>
+      <div class="rank-price">
+        <div class="rank-price-val cp">8~9.5억</div>
+        <div class="rank-price-sub">527세대</div>
+      </div>
+    </div>
+
+    <!-- 5위 -->
+    <div class="rank-item" style="background:#eff6ff;border-left:5px solid #3b82f6;">
+      <div class="rank-num" style="color:#3b82f6;">5</div>
+      <div class="rank-body">
+        <div class="rank-name-row">
+          <span class="rank-name">6단지 래미안</span>
+          <span class="badge bg-g">역 5분 평지</span>
+          <span class="badge bg-a">개운중 주배정</span>
+        </div>
+        <div class="rank-desc">출퇴근 강점(25~28분) · 역 5분 지하연결 · 평지<br>단점: 아들 기준 고명중 배정 동 소수 · 12~13억 고가</div>
+      </div>
+      <div class="rank-price">
+        <div class="rank-price-val cb">12~13억</div>
+        <div class="rank-price-sub">977세대</div>
+      </div>
+    </div>
+
+    <!-- 6위 -->
+    <div class="rank-item" style="background:#eff6ff;border-left:5px solid #93c5fd;">
+      <div class="rank-num" style="color:#93c5fd;">6</div>
+      <div class="rank-body">
+        <div class="rank-name-row">
+          <span class="rank-name">9단지 래미안</span>
+          <span class="badge bg-p">자산가치 최상</span>
+          <span class="badge bg-g">2,940세대 대장</span>
+        </div>
+        <div class="rank-desc">뉴타운 대장 · 에스컬레이터 · 개운중/고명중 동별 상이<br>단점: 13~14억 예산 상단 · 숭곡중 동 회피 필수</div>
+      </div>
+      <div class="rank-price">
+        <div class="rank-price-val cp">13~14억</div>
+        <div class="rank-price-sub">2,940세대</div>
+      </div>
+    </div>
+
+    <!-- 7위 -->
+    <div class="rank-item" style="background:#f8fafc;border-left:5px solid #94a3b8;">
+      <div class="rank-num" style="color:#94a3b8;">7</div>
+      <div class="rank-body">
+        <div class="rank-name-row">
+          <span class="rank-name">8단지 래미안</span>
+          <span class="badge bg-gr">조건부 차선</span>
+        </div>
+        <div class="rank-desc">개운중/고명중 동별 상이 · 저층동+개운중 or 고명중 동 조건부<br>단점: 9단지 대비 뚜렷한 우위 없음</div>
+      </div>
+      <div class="rank-price">
+        <div class="rank-price-val" style="color:#475569;">12.5~13.5억</div>
+        <div class="rank-price-sub">1,900세대</div>
+      </div>
+    </div>
+
+    <div class="rank-note" style="margin-top:16px;">
+      <div class="rank-note-title">👦 아들 기준 핵심 포인트</div>
+      <div class="rank-note-row">
+        • <b>금호어울림 1위</b> — 고명중 유력 + 역 279m 최근접 + 준신축(9년) + 시청역 23분 · 490세대 소규모 단점<br>
+        • <b>브라운스톤 2위</b> — 금호와 학군·가격 동일하나 역 거리·연식 불리 · 대신 1,074세대 대단지<br>
+        • <b>4단지 3위</b> — 길음중 100% 확정이라는 확실성이 고명중 유력보다 안전 · 경사 단점<br>
+        • <b>정릉2차 4위</b> — 8~9.5억 최저가로 예산 절약 극대화 · 소규모·경사 주의<br>
+        • <b>6단지 5위↓</b> — 출퇴근은 좋으나 아들 기준 고명중 배정 동이 소수라 순위 하락
+      </div>
+    </div>
+  </div>
+
+  <!-- 비추천 -->
+  <div class="bad-card">
+    <div class="bad-card-title">✗ 비추천 단지 (1·2·3·5·7단지)</div>
+    <div class="bad-card-row">
+      <b>2단지</b> 푸르지오 — 길음중 배정이나 경사+역거리 최악 (40~45분)<br>
+      <b>3단지</b> 센트레빌 — 길음중 배정이나 고지대 경사 극심<br>
+      <b>5단지</b> 래미안 — 숭곡중(전국 298위) 多 배정 + 경사 심함<br>
+      <b>7단지</b> 두산위브 — 8단지 대비 브랜드 약세, 추가 메리트 없음<br>
+      <b>1단지</b> 래미안 — 숭곡중 多 배정 + 2002년 25년 최노후
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  v6 — PC/모바일 통합 반응형 · 금호어울림센터힐 추가 · 9세 아들 기준 순위<br>
+  출처: 아파트랭킹·집품·리치고·학교알리미·나무위키(돈암초) · 시세 2025년 기준<br>
+  배정 학교는 성북강북교육지원청에서 반드시 최신 확인 필요
+</div>
+
+</div><!-- /page -->
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
